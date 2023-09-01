@@ -44,10 +44,12 @@ public class TarefaServiceImpl implements TarefaService {
 	}
 
 	@Override
-	public void AtualizarTarefa(Long id, TarefaDTO dto) throws NoSuchElementException {
+	public void AtualizarTarefa(Long id, TarefaDTO dto) throws NoSuchElementException, UnsupportedOperationException{
 		Tarefa tarefa = BuscarTarefa(id);
 		if (dto.getStatus() == TarefaStatus.CONCLUIDA) {
 			tarefa.setDataFim(LocalDateTime.now());
+		} else if ((tarefa.getStatus() == TarefaStatus.CANCELADA || tarefa.getStatus() == TarefaStatus.CONCLUIDA) && dto.getStatus() == null) {
+			throw new UnsupportedOperationException("Não é possível modificar tarefa cancelada ou finalizada");
 		}
 		tarefaMapper.DTOToTarefa(dto, tarefa);
 		SalvarOuAtulizarTarefa(tarefa);

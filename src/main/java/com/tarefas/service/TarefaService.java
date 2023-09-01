@@ -16,6 +16,6 @@ public interface TarefaService {
 
 	void ApagarTarefa(Long id) throws NoSuchElementException;
 
-	void AtualizarTarefa(Long id, TarefaDTO dto) throws NoSuchElementException ;
+	void AtualizarTarefa(Long id, TarefaDTO dto) throws NoSuchElementException, UnsupportedOperationException ;
 
 }
