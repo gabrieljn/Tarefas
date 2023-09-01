@@ -23,14 +23,15 @@ import com.tarefas.service.TarefaService;
 @RestController
 public class TarefaController {
 
-	@Autowired TarefaService tarefaService;
+	@Autowired
+	TarefaService tarefaService;
 
 	@PostMapping("/salvar")
 	public ResponseEntity<String> SalvarTarefa(@RequestBody Tarefa tarefa) throws MissingServletRequestParameterException {
-		if (tarefa.getTitulo() == null || tarefa.getTitulo().isEmpty()) {
-			throw new MissingServletRequestParameterException("Titulo", "String");
-		} else if (tarefa.getDescricao() == null || tarefa.getDescricao().isEmpty()) {
-			throw new MissingServletRequestParameterException("Descricao", "String");
+		if (tarefa.getTitulo() == null || tarefa.getTitulo().trim().isEmpty()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("É preciso informar o titulo");
+		} else if (tarefa.getDescricao() == null || tarefa.getDescricao().trim().isEmpty()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("É preciso informar a descricao");
 		} else {
 			tarefaService.SalvarOuAtulizarTarefa(tarefa);
 			return ResponseEntity.ok("Tarefa Salva com sucesso");
@@ -38,16 +39,11 @@ public class TarefaController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Tarefa> BuscarTarefa(@PathVariable Long id) throws MissingServletRequestParameterException {
-		if (id == null) {
-			throw new MissingServletRequestParameterException("id", "Long");
-		} else {
-			try {
-				return ResponseEntity.ok(tarefaService.BuscarTarefa(id));				
-			} catch (NoSuchElementException e) {
-				throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-			}
-
+	public ResponseEntity<?> BuscarTarefa(@PathVariable Long id) throws MissingServletRequestParameterException {
+		try {
+			return ResponseEntity.ok(tarefaService.BuscarTarefa(id));
+		} catch (NoSuchElementException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
 	}
 
@@ -58,29 +54,21 @@ public class TarefaController {
 
 	@PutMapping("/atualizar/{id}")
 	public ResponseEntity<String> AtualizarTarefa(@PathVariable Long id, @RequestBody TarefaDTO dto) throws MissingServletRequestParameterException {
-		if (id == null) {
-			throw new MissingServletRequestParameterException("id", "Long");
-		} else {
-			try {
-				tarefaService.AtualizarTarefa(id, dto);
-				return ResponseEntity.ok("Tarefa atualizada com sucesso");
-			} catch (NoSuchElementException e) {
-				throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-			}
+		try {
+			tarefaService.AtualizarTarefa(id, dto);
+			return ResponseEntity.ok("Tarefa atualizada com sucesso");
+		} catch (NoSuchElementException | UnsupportedOperationException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 	}
 
 	@DeleteMapping("/apagar/{id}")
 	public ResponseEntity<String> ApagarTarefa(@PathVariable Long id) throws MissingServletRequestParameterException {
-		if (id == null) {
-			throw new MissingServletRequestParameterException("id", "Long");
-		} else {
-			try {
-				tarefaService.ApagarTarefa(id);
-				return ResponseEntity.ok("Tarefa apagada");
-			} catch (NoSuchElementException e) {
-				throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-			}
+		try {
+			tarefaService.ApagarTarefa(id);
+			return ResponseEntity.ok("Tarefa apagada");
+		} catch (NoSuchElementException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
 	}
 
