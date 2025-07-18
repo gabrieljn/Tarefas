@@ -1,21 +1,22 @@
 package com.tarefas.service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import com.tarefas.controller.dto.TarefaDTO;
 import com.tarefas.domain.Tarefa;
+import com.tarefas.dto.TarefaDto;
 
 public interface TarefaService {
 
-	void SalvarOuAtulizarTarefa(Tarefa tarefa);
+	void criarTarefa(TarefaDto tarefaDto);
 
-	Tarefa BuscarTarefa(Long id) throws NoSuchElementException;
+	Tarefa buscarTarefa(Long id, String usuario) throws AccessDeniedException, NoSuchElementException;
 
-	List<Tarefa> BuscarTarefas();
+	List<Tarefa> buscarTarefas();
 
-	void ApagarTarefa(Long id) throws NoSuchElementException;
+	void apagarTarefa(Long id, String usuario) throws AccessDeniedException, NoSuchElementException;
 
-	void AtualizarTarefa(Long id, TarefaDTO dto) throws NoSuchElementException, UnsupportedOperationException ;
+	void atualizarTarefa(Long id, TarefaDto dto, String usuario) throws AccessDeniedException;
 
 }

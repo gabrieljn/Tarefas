@@ -1,31 +1,26 @@
-package com.tarefas.controller.dto;
+package com.tarefas.dto;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.tarefas.domain.TarefaStatus;
+import com.tarefas.domain.Usuario;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+public class TarefaDto implements Serializable {
 
-public class TarefaDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Long id;
 	private String titulo;
+
 	private String descricao;
-	@Enumerated(EnumType.STRING)
+
 	private TarefaStatus status;
+
 	private LocalDateTime dataInicio;
+
 	private LocalDateTime dataFim;
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
+	private Usuario usuario;
 
 	public String getTitulo() {
 		return titulo;
@@ -65,6 +60,14 @@ public class TarefaDTO implements Serializable {
 
 	public void setDataFim(LocalDateTime dataFim) {
 		this.dataFim = dataFim;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
 
 }
