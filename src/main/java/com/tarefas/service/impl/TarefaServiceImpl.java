@@ -1,5 +1,6 @@
 package com.tarefas.service.impl;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -7,58 +8,87 @@ import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tarefas.controller.dto.TarefaDTO;
 import com.tarefas.domain.Tarefa;
 import com.tarefas.domain.TarefaStatus;
+import com.tarefas.domain.Usuario;
+import com.tarefas.dto.TarefaDto;
 import com.tarefas.repository.TarefaRepository;
 import com.tarefas.service.TarefaMapper;
 import com.tarefas.service.TarefaService;
+import com.tarefas.service.UsuarioService;
 
 @Service
 public class TarefaServiceImpl implements TarefaService {
 
-	@Autowired TarefaRepository tarefaRepository;
-	@Autowired TarefaMapper tarefaMapper;
+	@Autowired
+	private TarefaRepository tarefaRepository;
 
-	@Override
-	public void SalvarOuAtulizarTarefa(Tarefa tarefa) {
-		if (tarefa.getId() == null) {
-			tarefa.setStatus(TarefaStatus.EM_ANDAMENTO);
-			tarefa.setDataInicio(LocalDateTime.now());
+	@Autowired
+	private TarefaMapper tarefaMapper;
+
+	@Autowired
+	private UsuarioService usuarioService;
+
+	public void criarTarefa(TarefaDto tarefaDto) {
+
+		tarefaDto.setStatus(TarefaStatus.EM_ANDAMENTO);
+
+		tarefaDto.setDataInicio(LocalDateTime.now());
+
+		Usuario usuario = usuarioService.buscarUsuario(tarefaDto.getUsuario().getUsuario());
+
+		if (usuario == null) {
+
+			throw new NoSuchElementException("usuário informado não existe");
+
 		}
+
+		tarefaDto.setUsuario(usuarioService.buscarUsuario(tarefaDto.getUsuario().getUsuario()));
+
+		Tarefa tarefa = new Tarefa(tarefaDto.getTitulo(), tarefaDto.getDescricao(), tarefaDto.getStatus(),tarefaDto.getDataInicio(), tarefaDto.getDataFim(), tarefaDto.getUsuario());
+
 		tarefaRepository.save(tarefa);
 	}
 
-	@Override
-	public Tarefa BuscarTarefa(Long id) throws NoSuchElementException {
-		if (tarefaRepository.findById(id).isEmpty()) {
+	public Tarefa buscarTarefa(Long id, String usuario) throws AccessDeniedException, NoSuchElementException {
+
+		Tarefa tarefa = tarefaRepository.findById(id).get();
+
+		if (tarefa.getId() == null) {
+
 			throw new NoSuchElementException("Tarefa nao encontrada");
-		} else {
-			return tarefaRepository.findById(id).get();
+
 		}
+
+		if (!tarefa.getUsuario().getUsuario().equals(usuario)) {
+
+			throw new AccessDeniedException("Tarefa não pertence ao usuário logado");
+
+		}
+
+		return tarefa;
+
 	}
 
-	@Override
-	public List<Tarefa> BuscarTarefas() {
+	public List<Tarefa> buscarTarefas() {
 		return tarefaRepository.findAll();
 	}
 
-	@Override
-	public void AtualizarTarefa(Long id, TarefaDTO dto) throws NoSuchElementException, UnsupportedOperationException{
-		Tarefa tarefa = BuscarTarefa(id);
-		if (dto.getStatus() == TarefaStatus.CONCLUIDA) {
-			tarefa.setDataFim(LocalDateTime.now());
-		} else if ((tarefa.getStatus() == TarefaStatus.CANCELADA || tarefa.getStatus() == TarefaStatus.CONCLUIDA) && dto.getStatus() == null) {
-			throw new UnsupportedOperationException("Não é possível modificar tarefa cancelada ou finalizada");
-		}
-		tarefaMapper.DTOToTarefa(dto, tarefa);
-		SalvarOuAtulizarTarefa(tarefa);
+	public void atualizarTarefa(Long id, TarefaDto tarefaDto, String usuario) throws AccessDeniedException {
+		Tarefa tarefa = buscarTarefa(id, usuario);
+
+		tarefaMapper.DTOToTarefa(tarefaDto, tarefa);
+
+		tarefaRepository.save(tarefa);
+
 	}
 
-	@Override
-	public void ApagarTarefa(Long id) throws NoSuchElementException {
-		BuscarTarefa(id);
-		tarefaRepository.deleteById(id);
+	public void apagarTarefa(Long id, String usuario) throws AccessDeniedException, NoSuchElementException {
+		Tarefa tarefa;
+
+		tarefa = buscarTarefa(id, usuario);
+
+		tarefaRepository.deleteById(tarefa.getId());
 	}
-	
+
 }
