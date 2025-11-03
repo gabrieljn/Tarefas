@@ -1,6 +1,8 @@
 package com.tarefas.domain;
 
+import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 
 import com.tarefas.enums.Funcao;
 
@@ -17,6 +19,7 @@ import jakarta.persistence.Table;
 @Table
 public class Usuario implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -27,7 +30,7 @@ public class Usuario implements Serializable {
 	private String usuario;
 
 	private String senha;
-	
+
 	@Enumerated(EnumType.STRING)
 	private Funcao funcao;
 
@@ -72,6 +75,24 @@ public class Usuario implements Serializable {
 
 	public void setFuncao(Funcao funcao) {
 		this.funcao = funcao;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(funcao, idUsuario, senha, usuario);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Usuario other = (Usuario) obj;
+		return funcao == other.funcao && Objects.equals(idUsuario, other.idUsuario)
+				&& Objects.equals(senha, other.senha) && Objects.equals(usuario, other.usuario);
 	}
 
 }

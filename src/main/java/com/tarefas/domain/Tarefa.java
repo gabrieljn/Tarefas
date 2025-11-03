@@ -1,7 +1,9 @@
 package com.tarefas.domain;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,34 +18,35 @@ import jakarta.persistence.Table;
 @Entity
 @Table
 public class Tarefa implements Serializable {
+
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	private String titulo;
-	
+
 	private String descricao;
-	
+
 	@Enumerated(EnumType.STRING)
 	private TarefaStatus status;
-	
+
 	private LocalDateTime dataInicio;
-	
+
 	private LocalDateTime dataFim;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "Id_usuario")
 	private Usuario usuario;
 
-	
-	
 	public Tarefa() {
 		super();
 	}
 
-	public Tarefa(String titulo, String descricao, TarefaStatus status, LocalDateTime dataInicio, LocalDateTime dataFim, Usuario usuario) {
+	public Tarefa(String titulo, String descricao, TarefaStatus status, LocalDateTime dataInicio, LocalDateTime dataFim,
+			Usuario usuario) {
 		super();
 		this.titulo = titulo;
 		this.descricao = descricao;
@@ -107,6 +110,25 @@ public class Tarefa implements Serializable {
 
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(dataFim, dataInicio, descricao, id, status, titulo, usuario);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Tarefa other = (Tarefa) obj;
+		return Objects.equals(dataFim, other.dataFim) && Objects.equals(dataInicio, other.dataInicio)
+				&& Objects.equals(descricao, other.descricao) && Objects.equals(id, other.id) && status == other.status
+				&& Objects.equals(titulo, other.titulo) && Objects.equals(usuario, other.usuario);
 	}
 
 }

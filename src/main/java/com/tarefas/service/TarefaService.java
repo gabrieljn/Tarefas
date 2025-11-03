@@ -1,8 +1,6 @@
 package com.tarefas.service;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import com.tarefas.domain.Tarefa;
 import com.tarefas.dto.TarefaDto;
@@ -11,12 +9,12 @@ public interface TarefaService {
 
 	void criarTarefa(TarefaDto tarefaDto);
 
-	Tarefa buscarTarefa(Long id, String usuario) throws AccessDeniedException, NoSuchElementException;
+	Tarefa buscarTarefa(Long id, String usuario);
 
-	List<Tarefa> buscarTarefas();
+	List<Tarefa> buscarTarefas(String nomeUsuario);
 
-	void apagarTarefa(Long id, String usuario) throws AccessDeniedException, NoSuchElementException;
+	void apagarTarefa(Long id, String usuario);
 
-	void atualizarTarefa(Long id, TarefaDto dto, String usuario) throws AccessDeniedException;
+	void atualizarTarefa(Long id, TarefaDto dto, String usuario);
 
 }

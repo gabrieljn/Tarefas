@@ -1,8 +1,5 @@
 package com.tarefas.controller;
 
-import java.nio.file.AccessDeniedException;
-import java.util.NoSuchElementException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tarefas.dto.TarefaDto;
 import com.tarefas.service.TarefaService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @CrossOrigin("*")
 @EnableMethodSecurity
@@ -38,122 +37,55 @@ public class TarefaController {
 	@PostMapping
 	public ResponseEntity<String> criarTarefa(@RequestBody TarefaDto tarefaDto) {
 
-		if (tarefaDto.getTitulo().isBlank() || tarefaDto.getDescricao().isBlank()) {
+		if (tarefaDto.getStatus() == null) {
 
-			return ResponseEntity.badRequest().body("Título e descrição são obrigatórios.");
-
-		}
-
-		try {
-
-			tarefaService.criarTarefa(tarefaDto);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Tarefa criada com sucesso.");
-
-		} catch (NoSuchElementException e) {
-
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-
-		} catch (Exception e) {
-
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor.");
+			return ResponseEntity.badRequest().body("O status da tarefa não pode ser nulo.");
 
 		}
 
+		if (tarefaDto.getDataInicio() == null) {
+
+			return ResponseEntity.badRequest().body("A data de início da tarefa não pode ser nula.");
+
+		}
+
+		if (tarefaDto.getTitulo() == null || tarefaDto.getTitulo().isBlank()) {
+
+			return ResponseEntity.badRequest().body("O título da tarefa não pode ser vazio.");
+
+		}
+
+		if (tarefaDto.getDescricao() == null || tarefaDto.getDescricao().isBlank()) {
+
+			return ResponseEntity.badRequest().body("A descrição da tarefa não pode ser vazia.");
+
+		}
+
+		tarefaService.criarTarefa(tarefaDto);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body("Tarefa criada com sucesso.");
 	}
 
 	@GetMapping("{id}")
 	public ResponseEntity<?> buscarTarefa(@PathVariable Long id) {
-
-		try {
-
-			return ResponseEntity.ok(tarefaService.buscarTarefa(id, getJwt().getSubject()));
-
-		} catch (NoSuchElementException e) {
-
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-
-		} catch (AccessDeniedException e) {
-
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-
-		} catch (Exception e) {
-
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor.");
-
-		}
-
+		return ResponseEntity.ok(tarefaService.buscarTarefa(id, getJwt().getSubject()));
 	}
 
 	@GetMapping
 	public ResponseEntity<?> buscarTarefas() {
-
-		try {
-
-			Jwt jwt = getJwt();
-
-			if (!"admin".equals(jwt.getClaimAsString("scope"))) {
-
-				return ResponseEntity.status(HttpStatus.FORBIDDEN)
-						.body("Você não possui permissão para acessar essa função.");
-
-			}
-
-			return ResponseEntity.ok(tarefaService.buscarTarefas());
-
-		} catch (Exception e) {
-
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor.");
-
-		}
-
+		return ResponseEntity.ok(tarefaService.buscarTarefas(getJwt().getSubject()));
 	}
 
 	@PutMapping("{id}")
-	public ResponseEntity<String> atualizarTarefa(@PathVariable Long id, @RequestBody TarefaDto tarefaDto) {
-
-		try {
-
-			tarefaService.atualizarTarefa(id, tarefaDto, getJwt().getSubject());
-			return ResponseEntity.ok("Tarefa atualizada com sucesso.");
-
-		} catch (NoSuchElementException e) {
-
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-
-		} catch (AccessDeniedException e) {
-
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-
-		} catch (Exception e) {
-
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor.");
-
-		}
-
+	public ResponseEntity<String> atualizarTarefa(@Valid @RequestBody TarefaDto tarefaDto, @PathVariable Long id) {
+		tarefaService.atualizarTarefa(id, tarefaDto, getJwt().getSubject());
+		return ResponseEntity.ok("Tarefa atualizada com sucesso.");
 	}
 
 	@DeleteMapping("{id}")
 	public ResponseEntity<String> deletarTarefa(@PathVariable Long id) {
-
-		try {
-
-			tarefaService.apagarTarefa(id, getJwt().getSubject());
-			return ResponseEntity.ok("Tarefa apagada com sucesso.");
-
-		} catch (NoSuchElementException e) {
-
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-
-		} catch (AccessDeniedException e) {
-
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-
-		} catch (Exception e) {
-
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor.");
-
-		}
-
+		tarefaService.apagarTarefa(id, getJwt().getSubject());
+		return ResponseEntity.ok("Tarefa apagada com sucesso.");
 	}
 
 }
