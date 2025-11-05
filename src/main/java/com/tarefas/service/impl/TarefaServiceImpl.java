@@ -1,11 +1,11 @@
 package com.tarefas.service.impl;
 
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.tarefas.domain.Tarefa;
@@ -50,7 +50,7 @@ public class TarefaServiceImpl implements TarefaService {
 		tarefaRepository.save(tarefa);
 	}
 
-	public Tarefa buscarTarefa(Long id, String usuario) throws AccessDeniedException, NoSuchElementException {
+	public Tarefa buscarTarefa(Long id, String usuario) {
 
 		Tarefa tarefa = tarefaRepository.findById(id).get();
 
@@ -70,11 +70,12 @@ public class TarefaServiceImpl implements TarefaService {
 
 	}
 
-	public List<Tarefa> buscarTarefas() {
-		return tarefaRepository.findAll();
+	public List<Tarefa> buscarTarefas(String nomeUsuario) {
+		Usuario usuario = usuarioService.buscarUsuario(nomeUsuario);
+		return tarefaRepository.findAllByUsuario(usuario);
 	}
 
-	public void atualizarTarefa(Long id, TarefaDto tarefaDto, String usuario) throws AccessDeniedException {
+	public void atualizarTarefa(Long id, TarefaDto tarefaDto, String usuario) {
 		Tarefa tarefa = buscarTarefa(id, usuario);
 
 		tarefaMapper.DTOToTarefa(tarefaDto, tarefa);
@@ -83,7 +84,7 @@ public class TarefaServiceImpl implements TarefaService {
 
 	}
 
-	public void apagarTarefa(Long id, String usuario) throws AccessDeniedException, NoSuchElementException {
+	public void apagarTarefa(Long id, String usuario) {
 		Tarefa tarefa;
 
 		tarefa = buscarTarefa(id, usuario);

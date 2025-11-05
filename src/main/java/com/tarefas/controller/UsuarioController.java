@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tarefas.dto.UsuarioDto;
 import com.tarefas.service.UsuarioService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @CrossOrigin("*")
 @RequestMapping("usuario")
@@ -21,32 +23,9 @@ public class UsuarioController {
 	private UsuarioService usuarioService;
 
 	@PostMapping
-	public ResponseEntity<?> cadastrarUsuario(@RequestBody UsuarioDto usuarioDto) {
-
-		try {
-
-			if (usuarioDto.getUsuario() == null || usuarioDto.getUsuario().isBlank() || usuarioDto.getSenha() == null
-					|| usuarioDto.getSenha().isBlank()) {
-
-				return ResponseEntity.badRequest().body("Usuário e senha são obrigatórios.");
-
-			}
-
-			usuarioService.cadastrarUsuario(usuarioDto);
-
-			return ResponseEntity.status(HttpStatus.CREATED)
-					.body("Usuário \"" + usuarioDto.getUsuario() + "\" criado com sucesso.");
-
-		} catch (IllegalArgumentException e) {
-	
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-
-		} catch (Exception e) {
-
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor.");
-
-		}
-
+	public ResponseEntity<?> cadastrarUsuario(@Valid @RequestBody UsuarioDto usuarioDto) {
+		usuarioService.cadastrarUsuario(usuarioDto);
+		return ResponseEntity.status(HttpStatus.CREATED).body("Usuário \"" + usuarioDto.getUsuario() + "\" criado com sucesso.");
 	}
 
 }

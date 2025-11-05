@@ -8,66 +8,66 @@ import com.tarefas.domain.Usuario;
 
 public class TarefaDto implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String titulo;
+    private String titulo;
 
-	private String descricao;
+    private String descricao;
 
-	private TarefaStatus status;
+    private TarefaStatus status;
 
-	private LocalDateTime dataInicio;
+    private LocalDateTime dataInicio;
 
-	private LocalDateTime dataFim;
+    private LocalDateTime dataFim;
 
-	private Usuario usuario;
+    private Usuario usuario;
 
-	public String getTitulo() {
-		return titulo;
-	}
+    public String getTitulo() {
+        return titulo;
+    }
 
-	public void setTitulo(String titulo) {
-		this.titulo = titulo;
-	}
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
 
-	public String getDescricao() {
-		return descricao;
-	}
+    public String getDescricao() {
+        return descricao;
+    }
 
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
-	}
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
 
-	public TarefaStatus getStatus() {
-		return status;
-	}
+    public TarefaStatus getStatus() {
+        return status;
+    }
 
-	public void setStatus(TarefaStatus status) {
-		this.status = status;
-	}
+    public void setStatus(TarefaStatus status) {
+        this.status = status;
+    }
 
-	public LocalDateTime getDataInicio() {
-		return dataInicio;
-	}
+    public LocalDateTime getDataInicio() {
+        return dataInicio;
+    }
 
-	public void setDataInicio(LocalDateTime dataInicio) {
-		this.dataInicio = dataInicio;
-	}
+    public void setDataInicio(LocalDateTime dataInicio) {
+        this.dataInicio = dataInicio;
+    }
 
-	public LocalDateTime getDataFim() {
-		return dataFim;
-	}
+    public LocalDateTime getDataFim() {
+        return dataFim;
+    }
 
-	public void setDataFim(LocalDateTime dataFim) {
-		this.dataFim = dataFim;
-	}
+    public void setDataFim(LocalDateTime dataFim) {
+        this.dataFim = dataFim;
+    }
 
-	public Usuario getUsuario() {
-		return usuario;
-	}
+    public Usuario getUsuario() {
+        return usuario;
+    }
 
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
-	}
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 
 }
