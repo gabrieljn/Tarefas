@@ -1,3 +1,4 @@
+
 package com.tarefas.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,19 +37,6 @@ public class TarefaController {
 
 	@PostMapping
 	public ResponseEntity<String> criarTarefa(@RequestBody TarefaDto tarefaDto) {
-
-		if (tarefaDto.getStatus() == null) {
-
-			return ResponseEntity.badRequest().body("O status da tarefa não pode ser nulo.");
-
-		}
-
-		if (tarefaDto.getDataInicio() == null) {
-
-			return ResponseEntity.badRequest().body("A data de início da tarefa não pode ser nula.");
-
-		}
-
 		if (tarefaDto.getTitulo() == null || tarefaDto.getTitulo().isBlank()) {
 
 			return ResponseEntity.badRequest().body("O título da tarefa não pode ser vazio.");
